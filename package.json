@@ -1,0 +1,27 @@
+{
+  "name": "cybershield-training-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SaaS para entrenamiento, simulación y medición del riesgo humano en ciberseguridad.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace apps/web",
+    "dev:api": "npm run dev --workspace apps/api",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces --if-present",
+    "docker:up": "docker compose -f infra/docker/docker-compose.yml up -d",
+    "docker:down": "docker compose -f infra/docker/docker-compose.yml down"
+  },
+  "keywords": [
+    "cybersecurity",
+    "training",
+    "phishing",
+    "risk-score",
+    "saas"
+  ],
+  "author": "Oliver Abreu Mateo, Pedro Abreu, Leandro Coiscou",
+  "license": "MIT"
+}
