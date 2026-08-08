@@ -1,0 +1,12 @@
+import { useEffect, useState } from 'react';
+import { api } from '../services/api';
+import type { TrainingModule } from '../types';
+import { ErrorState, LoadingState } from '../components/Ui';
+
+export function ModuleDetailPage({ moduleId, back }: { moduleId: string; back: () => void }) {
+  const [module, setModule] = useState<TrainingModule | null>(null); const [error, setError] = useState(''); const [saving, setSaving] = useState(false);
+  useEffect(() => { api.module(moduleId).then(async (data) => { setModule(data); if (data.progress.status === 'NOT_STARTED') { await api.updateProgress(moduleId, 'IN_PROGRESS', 25); setModule({ ...data, progress: { ...data.progress, status: 'IN_PROGRESS', progressPercent: 25 } }); } }).catch((reason: Error) => setError(reason.message)); }, [moduleId]);
+  async function complete() { if (!module) return; setSaving(true); try { await api.updateProgress(module.id, 'COMPLETED'); setModule({ ...module, progress: { ...module.progress, status: 'COMPLETED', progressPercent: 100 } }); } catch (reason) { setError(reason instanceof Error ? reason.message : 'No fue posible guardar.'); } finally { setSaving(false); } }
+  if (error) return <ErrorState message={error} />; if (!module) return <LoadingState />;
+  return <><button className="back-button" onClick={back}>← Volver a entrenamiento</button><section className="lesson-hero"><span className="eyebrow">{module.category.replace('_', ' ')}</span><h1>{module.title}</h1><p>{module.description}</p><div><span>◷ {module.estimatedMinutes} minutos</span><span>{module.lessons.length} lecciones</span></div></section><section className="lesson-layout"><div className="lesson-list">{module.lessons.map((lesson, index) => <article key={lesson.title}><span className="lesson-number">0{index + 1}</span><div><h2>{lesson.title}</h2><p>{lesson.content}</p></div></article>)}<button className="primary-button" disabled={saving || module.progress.status === 'COMPLETED'} onClick={complete}>{module.progress.status === 'COMPLETED' ? '✓ Módulo completado' : saving ? 'Guardando…' : 'Completar módulo y actualizar score'}</button></div><aside className="lesson-summary"><span>Tu progreso</span><strong>{module.progress.progressPercent}%</strong><div className="progress-track"><i style={{ width: `${module.progress.progressPercent}%` }} /></div><p>Al completar el módulo, tu Cyber Risk Score se recalcula automáticamente.</p></aside></section></>;
+}
