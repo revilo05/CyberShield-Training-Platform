@@ -24,5 +24,12 @@ export const api = {
   submitSimulation: (id: string, optionId: string) => request<SimulationResult>(`/api/simulations/${id}/answers`, { method: 'POST', body: JSON.stringify({ optionId }) }),
   risk: () => request<RiskScore>('/api/risk-score/me'),
   adminDashboard: () => request<AdminDashboard>('/api/admin/dashboard'),
-  reports: () => request<ReportRow[]>('/api/reports/progress')
+  reports: () => request<ReportRow[]>('/api/reports/progress'),
+  campaigns: () => request<unknown[]>('/api/v1/campaigns'),
+  scenarios: () => request<unknown[]>('/api/v1/scenarios'),
+  analytics: () => request<unknown>('/api/v1/analytics/overview'),
+  createCampaign: (data: unknown) => request<unknown>('/api/v1/campaigns', { method: 'POST', body: JSON.stringify(data) }),
+  scheduleCampaign: (id: string) => request<unknown>(`/api/v1/campaigns/${id}/schedule`, { method: 'POST' }),
+  contentDrafts: () => request<unknown[]>('/api/v1/content/drafts'), createContentDraft: (data: unknown) => request<unknown>('/api/v1/content/drafts', { method: 'POST', body: JSON.stringify(data) }), reviewDraft: (id: string, decision: string) => request<unknown>(`/api/v1/content/drafts/${id}/approve`, { method: 'POST', body: JSON.stringify({ decision }) }),
+  integrations: () => request<unknown[]>('/api/v1/integrations/status')
 };

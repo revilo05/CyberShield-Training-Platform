@@ -1,6 +1,6 @@
 export type UserRole = 'EMPLOYEE' | 'SUPERVISOR' | 'ADMIN';
 export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH';
-export type RouteName = 'dashboard' | 'modules' | 'module-detail' | 'simulations' | 'reports' | 'profile';
+export type RouteName = 'dashboard' | 'modules' | 'module-detail' | 'simulations' | 'reports' | 'enterprise' | 'profile';
 
 export type User = { id: string; companyId?: string; fullName: string; email: string; role: UserRole; department: string };
 export type TrainingProgress = { status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED'; progressPercent: number };

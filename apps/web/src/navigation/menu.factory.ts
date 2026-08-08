@@ -13,6 +13,7 @@ export class RoleMenuFactory {
   static create(role: UserRole): MenuItem[] {
     return role === 'EMPLOYEE'
       ? employeeMenu
-      : [...employeeMenu, { route: 'reports', label: 'Reportes', icon: '▥' }];
+      : [...employeeMenu, { route: 'reports', label: 'Reportes', icon: '▥' },
+          ...(role === 'ADMIN' ? [{ route: 'enterprise' as const, label: 'Enterprise Pilot', icon: '◆' }] : [])];
   }
 }

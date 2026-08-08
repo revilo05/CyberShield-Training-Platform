@@ -1,25 +1,39 @@
-name: CI
-
+name: CyberShield CI
 on:
-  push:
-    branches: [main]
   pull_request:
-    branches: [main]
-
+  push:
+    branches: [main, Develop]
+permissions:
+  contents: read
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env: { POSTGRES_USER: cybershield, POSTGRES_PASSWORD: cybershield, POSTGRES_DB: cybershield }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U cybershield" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://cybershield:cybershield@localhost:5432/cybershield
+      REDIS_URL: redis://localhost:6379
+      DEMO_MODE: 'true'
+      AUTO_MIGRATE: 'false'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build workspaces
-        run: npm run build
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npm run db:migrate
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: Verify content baseline
+        run: |
+          test "$(psql "$DATABASE_URL" -Atc 'select count(*) from training_modules')" -ge 8
+          test "$(psql "$DATABASE_URL" -Atc 'select count(*) from scenario_versions')" -ge 12
