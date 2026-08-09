@@ -13,6 +13,7 @@
     "dev:worker": "npm run dev --workspace apps/worker",
     "db:migrate": "npm run db:migrate --workspace apps/api",
     "build": "npm run build --workspace packages/shared && npm run build --workspace apps/api && npm run build --workspace apps/worker && npm run build --workspace apps/web",
+    "build:vercel": "npm run build --workspace packages/shared && npm run build --workspace apps/api && tsc -p tsconfig.vercel.json && npm run build --workspace apps/web",
     "test": "npm run test --workspace apps/api",
     "verify": "npm run lint && npm run test && npm run build",
     "lint": "npm run lint --workspaces --if-present",

@@ -12,9 +12,11 @@
     "lint": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@aws-sdk/client-sesv2": "latest",
     "@azure/identity": "latest",
     "@cybershield/shared": "*",
     "@microsoft/microsoft-graph-client": "latest",
+    "@vercel/functions": "latest",
     "cors": "latest",
     "dotenv": "latest",
     "express": "latest",
