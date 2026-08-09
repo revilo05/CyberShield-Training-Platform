@@ -12,10 +12,13 @@
     "dev:api": "npm run dev --workspace apps/api",
     "dev:worker": "npm run dev --workspace apps/worker",
     "db:migrate": "npm run db:migrate --workspace apps/api",
+    "build:shared": "npm run build --workspace packages/shared",
     "build": "npm run build --workspace packages/shared && npm run build --workspace apps/api && npm run build --workspace apps/worker && npm run build --workspace apps/web",
     "build:vercel": "npm run build --workspace packages/shared && npm run build --workspace apps/api && tsc -p tsconfig.vercel.json && npm run build --workspace apps/web",
+    "pretest": "npm run build:shared",
     "test": "npm run test --workspace apps/api",
     "verify": "npm run lint && npm run test && npm run build",
+    "prelint": "npm run build:shared",
     "lint": "npm run lint --workspaces --if-present",
     "docker:up": "docker compose -f infra/docker/docker-compose.yml up -d",
     "docker:down": "docker compose -f infra/docker/docker-compose.yml down"
