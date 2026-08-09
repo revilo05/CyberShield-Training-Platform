@@ -11,3 +11,5 @@ export type CyberRiskScore = {
 };
 
 export type TrainingCategory = 'PHISHING' | 'PASSWORDS' | 'SOCIAL_ENGINEERING';
+
+export * from './enterprise.js';

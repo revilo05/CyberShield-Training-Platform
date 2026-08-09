@@ -1,27 +1,42 @@
 {
   "name": "@cybershield/api",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js",
-    "lint": "echo \"Add ESLint config\""
+    "start": "node dist/server.js",
+    "db:migrate": "tsx src/database/migrate.ts",
+    "test": "vitest run",
+    "lint": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@aws-sdk/client-sesv2": "latest",
+    "@azure/identity": "latest",
+    "@cybershield/shared": "*",
+    "@microsoft/microsoft-graph-client": "latest",
+    "@vercel/functions": "latest",
     "cors": "latest",
     "dotenv": "latest",
     "express": "latest",
+    "express-oauth2-jwt-bearer": "latest",
     "helmet": "latest",
+    "openai": "latest",
     "pg": "latest",
+    "pino-http": "latest",
+    "express-rate-limit": "latest",
+    "pdfkit": "latest",
     "zod": "latest"
   },
   "devDependencies": {
     "@types/cors": "latest",
     "@types/express": "latest",
     "@types/node": "latest",
+    "@types/pg": "latest",
     "tsx": "latest",
-    "typescript": "latest"
+    "@types/pdfkit": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
   }
 }

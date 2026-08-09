@@ -1,69 +1,54 @@
 # CyberShield Training Platform
 
-**CyberShield Training Platform** es una plataforma SaaS orientada a empresas que busca reducir el **riesgo humano en ciberseguridad** mediante entrenamiento interactivo, simulaciones realistas, rutas personalizadas y analítica de comportamiento.
+Piloto empresarial para gestionar riesgo humano: entrenamiento, simulaciones controladas, campañas, reporting, analítica explicable e integraciones empresariales.
 
-La nueva idea del proyecto evoluciona de una simple plataforma de cursos a un producto de **gestión y medición del riesgo humano**, donde los administradores pueden identificar usuarios vulnerables, medir progreso y tomar decisiones basadas en datos.
+## Inicio rápido
 
-## Integrantes
-
-- Oliver Abreu Mateo — 25-1619
-- Pedro Abreu — 23-1253
-- Leandro Coiscou — 24-0557
-
-## Problema que resuelve
-
-Muchas empresas sufren incidentes de seguridad por errores humanos: phishing, contraseñas débiles, ingeniería social, descargas sospechosas y malas prácticas digitales. CyberShield permite entrenar a los empleados y medir su nivel de riesgo antes de que ocurra un incidente real.
-
-## Propuesta de valor
-
-CyberShield ayuda a convertir a los empleados en la primera línea de defensa de la organización.
-
-El sistema ofrece:
-
-- Simulaciones realistas de phishing e ingeniería social.
-- Módulos cortos de aprendizaje.
-- Rutas de entrenamiento personalizadas.
-- Cyber Risk Score por empleado, departamento y empresa.
-- Dashboard administrativo con métricas de riesgo.
-- Gamificación para aumentar participación.
-- Reportes de evidencia para auditorías internas.
-
-## Stack técnico propuesto
-
-- **Frontend:** React + TypeScript + Vite
-- **Backend:** Node.js + Express + TypeScript
-- **Base de datos:** PostgreSQL
-- **Cache / sesiones:** Redis
-- **Autenticación:** Auth0 / OAuth 2.0 / OpenID Connect
-- **Infraestructura local:** Docker Compose
-- **Cloud objetivo:** AWS
-
-## Estructura del repositorio
-
-```txt
-apps/
-  api/          Backend Express + TypeScript
-  web/          Frontend React + TypeScript
-packages/
-  shared/       Tipos compartidos
-database/
-  migrations/   Esquema inicial PostgreSQL
-infra/
-  docker/       Docker Compose local
-docs/
-  mvp/          Alcance del MVP
-  architecture/ Arquitectura y decisiones técnicas
-```
-
-## Ejecutar localmente
+Requisitos: Node.js 24 LTS, npm, Docker Desktop.
 
 ```bash
 npm install
 npm run docker:up
+npm run db:migrate
+```
+
+Después inicia, en terminales separadas:
+
+```bash
 npm run dev:api
+npm run dev:worker
 npm run dev:web
 ```
 
-## Estado del proyecto
+Abre `http://localhost:5173`. En desarrollo puedes usar `admin@cybershield.demo`; `DEMO_MODE` se rechaza en producción.
 
-Repositorio inicializado para comenzar el desarrollo del MVP académico y funcional de CyberShield.
+## Arquitectura
+
+- `apps/web`: React + Vite, Auth0 Organizations y centro Enterprise Pilot.
+- `apps/api`: Express, JWT OIDC/JWKS, repositorios PostgreSQL, HRS-2.0, campañas, webhooks, Graph, OpenAI y exportaciones.
+- `apps/worker`: BullMQ/Redis, outbox, SES, reintentos, rate limiting y DLQ.
+- `packages/shared`: contratos TypeScript de tenant, campaña, riesgo, contenido y auditoría.
+- `database/migrations`: esquema, contenido, RLS, retención y seeds de desarrollo.
+- `infra/terraform`: ECS Fargate, RDS, ElastiCache, SES, ECR, Secrets Manager y CloudWatch.
+
+## Calidad
+
+```bash
+npm run verify
+```
+
+El comando ejecuta TypeScript estricto, pruebas golden/unitarias y builds de los cuatro workspaces. CI repite la validación con PostgreSQL 16 y Redis reales.
+
+## Documentación
+
+- [Diseño del piloto](docs/ENTERPRISE_PILOT.md)
+- [Paso a paso de pruebas](docs/TESTING.md)
+- [Seguridad, privacidad y retención](docs/SECURITY_PRIVACY.md)
+- [Runbooks operativos](docs/RUNBOOKS.md)
+- [Auth0, Entra ID y SCIM](docs/AUTH0_ENTRA_SCIM.md)
+- [API v1](docs/API_V1.md)
+- [Infraestructura AWS](infra/terraform/README.md)
+
+## Convenciones críticas
+
+`0` representa menor riesgo y `100` mayor riesgo. HRS-2.0 nunca mezcla exposición del puesto con conducta, guarda snapshots por versión y muestra confianza. Los borradores de IA no publican contenido ni modifican scores. Las simulaciones no recopilan credenciales y no usan píxeles de apertura.
