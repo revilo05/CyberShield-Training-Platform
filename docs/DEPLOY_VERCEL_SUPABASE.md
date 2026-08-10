@@ -48,7 +48,6 @@ Configura estos valores en Project Settings, Environment Variables. Los secretos
 
 | Variable | Uso |
 | --- | --- |
-| NODE_ENV | production |
 | DATABASE_URL | Shared Pooler transaction mode, puerto 6543. No agregues parametros `sslmode`, `sslcert`, `sslkey` o `sslrootcert` cuando uses `DATABASE_SSL_CA_BASE64` |
 | DATABASE_SSL_CA_BASE64 | Certificado CA de Supabase codificado como Base64 en una sola linea; secreto solo del servidor |
 | DATABASE_POOL_MAX | 3 |
@@ -86,10 +85,12 @@ Para campanas agrega AWS_REGION y SES_FROM_EMAIL. Para funciones opcionales agre
 
 1. Importa el repositorio en Vercel y selecciona la raiz del monorepo.
 2. Vercel detectara vercel.json:
+   - Install command: npm ci --include=dev
    - Build command: npm run build:vercel
    - Output: apps/web/dist
    - Function: api/index.ts
 3. Agrega las variables anteriores.
+   No agregues `NODE_ENV` manualmente en Project Settings: Vercel define el entorno de produccion y npm puede omitir las dependencias de compilacion si recibe `NODE_ENV=production` durante la instalacion.
 4. Ejecuta primero un Preview Deployment.
 5. Prueba /api/health, login, modulos y dashboard.
 6. Promueve exactamente ese preview a produccion.
