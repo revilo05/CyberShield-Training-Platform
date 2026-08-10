@@ -7,6 +7,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(4000),
   DATABASE_URL: z.string().url().default('postgresql://cybershield:cybershield@localhost:5432/cybershield'),
   DATABASE_POOL_MAX: z.coerce.number().int().positive().max(20).optional(),
+  DATABASE_SSL_CA_BASE64: z.string().optional(),
   REDIS_URL: z.string().default('redis://localhost:6379'),
   WEB_ORIGIN: z.string().url().default('http://localhost:5173'),
   DEMO_MODE: booleanFromString,
@@ -33,6 +34,7 @@ export type AppConfig = {
   port: number;
   databaseUrl: string;
   databasePoolMax: number;
+  databaseSslCa?: string;
   redisUrl: string;
   webOrigin: string;
   demoMode: boolean;
@@ -65,6 +67,7 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env): AppCon
     port: env.PORT,
     databaseUrl: env.DATABASE_URL,
     databasePoolMax: env.DATABASE_POOL_MAX ?? (env.NODE_ENV === 'production' ? 3 : 8),
+    databaseSslCa: decodeDatabaseSslCa(env.DATABASE_SSL_CA_BASE64),
     redisUrl: env.REDIS_URL,
     webOrigin: env.WEB_ORIGIN,
     demoMode,
@@ -77,4 +80,17 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env): AppCon
     webhookAllowedHosts: env.WEBHOOK_ALLOWED_HOSTS.split(',').map((item) => item.trim().toLowerCase()).filter(Boolean),
     simulationTokenTtlHours: env.SIMULATION_TOKEN_TTL_HOURS
   };
+}
+
+function decodeDatabaseSslCa(encodedCa: string | undefined): string | undefined {
+  const normalized = encodedCa?.trim();
+  if (!normalized) return undefined;
+  if (!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(normalized)) {
+    throw new Error('DATABASE_SSL_CA_BASE64 must contain valid Base64.');
+  }
+  const pem = Buffer.from(normalized, 'base64').toString('utf8');
+  if (!pem.includes('-----BEGIN CERTIFICATE-----') || !pem.includes('-----END CERTIFICATE-----')) {
+    throw new Error('DATABASE_SSL_CA_BASE64 must decode to a PEM certificate.');
+  }
+  return pem;
 }
