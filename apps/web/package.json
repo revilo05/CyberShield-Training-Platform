@@ -9,15 +9,15 @@
     "lint": "echo \"Add ESLint config\""
   },
   "dependencies": {
-    "@vitejs/plugin-react": "latest",
-    "vite": "latest",
     "@auth0/auth0-react": "latest",
-    "typescript": "latest",
+    "@vitejs/plugin-react": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "vite": "latest"
   },
   "devDependencies": {
     "@types/react": "latest",
-    "@types/react-dom": "latest"
+    "@types/react-dom": "latest",
+    "typescript": "6.0.3"
   }
 }

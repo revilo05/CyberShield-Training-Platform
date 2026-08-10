@@ -31,5 +31,8 @@
     "saas"
   ],
   "author": "Oliver Abreu Mateo",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "6.0.3"
+  }
 }
