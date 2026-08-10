@@ -54,7 +54,8 @@ export class EnterpriseRiskService {
     const factors = definitions.map(([factor, normalizedValue, weight, evidenceCount, explanation]) => ({ factor, normalizedValue: round(normalizedValue), weight, contribution: round(normalizedValue * weight), evidenceCount, explanation }));
     const score = round(clamp(factors.reduce((sum, factor) => sum + factor.contribution, 0)));
     const evidenceCount = factors.reduce((sum, factor) => sum + factor.evidenceCount, 0);
-    const freshest = [...evidence.simulationResults.map((item) => item.completedAt), ...evidence.behaviorEvents.map((item) => item.occurredAt), ...evidence.modules.map((item) => item.updatedAt)].sort().at(-1);
+    const evidenceDates = [...evidence.simulationResults.map((item) => item.completedAt), ...evidence.behaviorEvents.map((item) => item.occurredAt), ...evidence.modules.map((item) => item.updatedAt)].sort();
+    const freshest = evidenceDates[evidenceDates.length - 1];
     const freshness = freshest ? decay(freshest, now) : 0;
     const confidence = round(clamp(Math.min(evidenceCount / 12, 1) * 75 + freshness * 25));
     const confidenceLabel = confidence >= 75 ? 'HIGH' : confidence >= 40 ? 'MEDIUM' : 'LOW';
