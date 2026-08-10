@@ -3,6 +3,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { Pool } from 'pg';
 import { loadConfig } from '../config/env.js';
+import { createPool } from './pool.js';
 
 export async function runMigrations(pool: Pool, migrationsDirectory = path.resolve(process.cwd(), '../../database/migrations')): Promise<void> {
   await pool.query(`CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -38,7 +39,7 @@ export async function runMigrations(pool: Pool, migrationsDirectory = path.resol
 
 async function main() {
   const config = loadConfig();
-  const pool = new Pool({ connectionString: config.databaseUrl });
+  const pool = createPool(config);
   try { await runMigrations(pool); } finally { await pool.end(); }
 }
 

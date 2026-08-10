@@ -16,12 +16,13 @@ Esta variante usa un solo proyecto Vercel para React y Express, y un proyecto Su
 2. En Connect, copia dos conexiones distintas:
    - Direct connection, puerto 5432: solo para migraciones y tareas administrativas.
    - Shared Pooler transaction mode, puerto 6543: para DATABASE_URL en Vercel.
-3. Ambas conexiones deben exigir TLS. No publiques la contrasena ni una service role key.
+3. Ambas conexiones deben exigir TLS. Descarga tambien el certificado CA de servidor desde Database Settings, SSL Configuration. No publiques la contrasena, una service role key ni el valor configurado en variables de entorno.
 4. Ejecuta las migraciones con la conexion directa:
 
 ~~~powershell
 $env:NODE_ENV = 'development'
-$env:DATABASE_URL = 'postgresql://...direct.../postgres?sslmode=require'
+$env:DATABASE_URL = 'postgresql://...direct.../postgres?sslmode=verify-full'
+$env:NODE_EXTRA_CA_CERTS = 'C:\ruta\prod-ca-2021.crt'
 $env:AUTO_MIGRATE = 'false'
 npm run db:migrate
 ~~~
@@ -48,7 +49,8 @@ Configura estos valores en Project Settings, Environment Variables. Los secretos
 | Variable | Uso |
 | --- | --- |
 | NODE_ENV | production |
-| DATABASE_URL | Shared Pooler transaction mode, puerto 6543 y sslmode=require |
+| DATABASE_URL | Shared Pooler transaction mode, puerto 6543. No agregues parametros `sslmode`, `sslcert`, `sslkey` o `sslrootcert` cuando uses `DATABASE_SSL_CA_BASE64` |
+| DATABASE_SSL_CA_BASE64 | Certificado CA de Supabase codificado como Base64 en una sola linea; secreto solo del servidor |
 | DATABASE_POOL_MAX | 3 |
 | AUTO_MIGRATE | false |
 | DEMO_MODE | false |
@@ -66,6 +68,17 @@ Configura estos valores en Project Settings, Environment Variables. Los secretos
 | WEBHOOK_ALLOWED_HOSTS | Hosts HTTPS separados por coma |
 
 VITE_API_URL se omite porque web y API comparten origen. REDIS_URL tampoco se usa en esta variante.
+
+Convierte el certificado descargado a Base64 sin escribir una copia PEM dentro del repositorio:
+
+~~~powershell
+$bytes = [System.IO.File]::ReadAllBytes('C:\ruta\prod-ca-2021.crt')
+[Convert]::ToBase64String($bytes)
+~~~
+
+Copia la salida completa en `DATABASE_SSL_CA_BASE64` desde Project Settings. La API la decodifica en memoria y configura `pg` con `ssl.ca` y `rejectUnauthorized: true`. Cuando esta variable existe, la aplicacion elimina de la URL solo los parametros TLS que `pg` usaria para reemplazar ese objeto SSL; conserva los demas parametros.
+
+Para desarrollo local puedes dejar `DATABASE_SSL_CA_BASE64` vacia y usar `NODE_EXTRA_CA_CERTS=C:\ruta\prod-ca-2021.crt` junto con `sslmode=verify-full` en `DATABASE_URL`. `NODE_EXTRA_CA_CERTS` debe existir antes de iniciar Node.js.
 
 Para campanas agrega AWS_REGION y SES_FROM_EMAIL. Para funciones opcionales agrega las credenciales Microsoft y OPENAI_API_KEY. No configures claves que una funcion no necesite.
 
