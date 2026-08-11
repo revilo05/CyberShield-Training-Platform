@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import pinoHttp from 'pino-http';
+import { pinoHttp } from 'pino-http';
 
 export const httpLogger = pinoHttp({
   level: process.env.LOG_LEVEL ?? 'info',
